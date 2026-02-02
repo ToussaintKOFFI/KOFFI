@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Surprise 🔐</title>
+
+<style>
+:root{
+  --bg1:#240016; --bg2:#000; --accent:#ff4b7d;
+}
+body{
+  margin:0; height:100vh; overflow:hidden;
+  font-family:Segoe UI,sans-serif; color:#fff;
+  background:radial-gradient(circle at bottom,var(--bg1),var(--bg2));
+  display:flex; align-items:center; justify-content:center;
+}
+.hidden{display:none}
+.screen{max-width:92%; text-align:center; padding:20px; z-index:2}
+h1{font-size:clamp(2rem,6vw,4rem); text-shadow:0 0 25px var(--accent)}
+p{opacity:.9}
+button,input,select{
+  padding:14px 28px; border-radius:30px; border:none;
+  background:linear-gradient(135deg,var(--accent),#ff0844);
+  color:#fff; font-size:1rem; margin-top:12px;
+}
+input{background:#111}
+video{
+  width:min(90%,420px); border-radius:16px;
+  box-shadow:0 0 30px rgba(255,105,180,.6); margin-top:16px;
+}
+.star{position:absolute;width:2px;height:2px;background:#fff;opacity:.7;animation:tw 2s infinite alternate}
+@keyframes tw{from{opacity:.3}to{opacity:1}}
+.heart{position:absolute;width:16px;height:16px;background:red;transform:rotate(45deg);animation:up 5s linear infinite}
+.heart:before,.heart:after{content:'';position:absolute;width:16px;height:16px;background:red;border-radius:50%}
+.heart:before{top:-8px}.heart:after{left:-8px}
+@keyframes up{from{transform:translateY(0) rotate(45deg);opacity:1}to{transform:translateY(-1000px) rotate(45deg);opacity:0}}
+.flash{position:fixed;inset:0;background:#fff;opacity:0;animation:fl 1s}
+@keyframes fl{0%{opacity:1}100%{opacity:0}}
+.photo{width:200px;max-width:70%;border-radius:18px;box-shadow:0 0 30px rgba(255,105,180,.8);margin-top:12px}
+.signature{opacity:.8;margin-top:10px;font-style:italic}
+.topbar{position:fixed;top:10px;right:10px;display:flex;gap:8px}
+.link{background:#111;padding:8px 14px;border-radius:20px;font-size:.9rem}
+</style>
+</head>
+
+<body>
+
+<audio id="music" loop><source src="love.mp3"></audio>
+
+<!-- ⭐ étoiles -->
+<script>
+for(let i=0;i<120;i++){const s=document.createElement('div');s.className='star';
+s.style.left=Math.random()*100+'vw';s.style.top=Math.random()*100+'vh';
+s.style.animationDuration=(Math.random()*3+2)+'s';document.body.appendChild(s)}
+</script>
+
+<div class="topbar">
+  <select id="theme" onchange="setTheme(this.value)">
+    <option value="rose">Rose</option>
+    <option value="violet">Violet</option>
+    <option value="night">Bleu nuit</option>
+  </select>
+  <button class="link" onclick="share()">Partager 🔗</button>
+</div>
+
+<!-- 🔐 ÉCRAN CODE -->
+<div class="screen" id="lock">
+  <h1>🔐 Code secret</h1>
+  <p>Entre le code pour continuer</p>
+  <input id="code" placeholder="Code…" />
+  <br><button onclick="unlock()">Valider</button>
+</div>
+
+<!-- ⏳ COMPTE À REBOURS -->
+<div class="screen hidden" id="count">
+  <h1 id="t">3</h1>
+</div>
+
+<!-- 💖 FINAL -->
+<div class="screen hidden" id="final">
+  <h1 id="txt"></h1>
+  <img src="Yassi.jpeg" class="photo hidden" id="img">
+  <div class="signature hidden" id="sig">— Toussaint 💖</div>
+</div>
+
+<script>
+const SECRET="1402"; // 🔐 CHANGE LE CODE ICI
+const lines=[
+ "Yasmine ❤️",
+ "Sous ce ciel étoilé ✨",
+ "mon cœur te choisit chaque jour 💓",
+ "Je t’aime 💖"
+];
+
+const music=document.getElementById('music');
+const lock=document.getElementById('lock');
+const count=document.getElementById('count');
+const final=document.getElementById('final');
+const t=document.getElementById('t');
+const txt=document.getElementById('txt');
+const img=document.getElementById('img');
+const vid=document.getElementById('vid');
+const sig=document.getElementById('sig');
+
+function unlock(){
+  if(document.getElementById('code').value===SECRET){
+    lock.classList.add('hidden'); count.classList.remove('hidden');
+    music.play(); let n=3;
+    const it=setInterval(()=>{t.textContent=--n;
+      if(n===0){clearInterval(it); count.classList.add('hidden'); startFinal();}
+    },1000);
+  } else alert("Code incorrect ❌");
+}
+
+function startFinal(){
+  final.classList.remove('hidden'); flash(); hearts();
+  let i=0; const it=setInterval(()=>{
+    txt.textContent=lines[i++]; 
+    if(i===lines.length){
+      clearInterval(it);
+      setTimeout(()=>img.classList.remove('hidden'),800);
+      setTimeout(()=>vid.classList.remove('hidden'),1600);
+      setTimeout(()=>sig.classList.remove('hidden'),2400);
+    }
+  },1800);
+}
+
+function hearts(){setInterval(()=>{for(let i=0;i<5;i++){
+  const h=document.createElement('div');h.className='heart';
+  h.style.left=Math.random()*100+'vw';h.style.animationDuration=(Math.random()*3+3)+'s';
+  document.body.appendChild(h); setTimeout(()=>h.remove(),6000);
+}},200)}
+
+function flash(){const f=document.createElement('div');f.className='flash';
+document.body.appendChild(f); setTimeout(()=>f.remove(),1000)}
+
+function setTheme(v){
+  if(v==='rose'){css('#240016','#000','#ff4b7d')}
+  if(v==='violet'){css('#1a0033','#000','#b76cff')}
+  if(v==='night'){css('#00111f','#000','#4bbcff')}
+}
+function css(a,b,c){document.documentElement.style.setProperty('--bg1',a);
+document.documentElement.style.setProperty('--bg2',b);
+document.documentElement.style.setProperty('--accent',c)}
+
+function share(){
+  const url=location.origin+location.pathname+"#surprise";
+  navigator.clipboard.writeText(url);
+  alert("Lien copié 📤");
+}
+
+// accès direct via lien
+if(location.hash==="#surprise"){lock.classList.add('hidden'); unlock=()=>{}}
+</script>
+
+</body>
+</html>
